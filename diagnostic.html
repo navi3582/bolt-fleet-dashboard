@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Fleet Diagnostic</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a0a;color:white;font-family:-apple-system,sans-serif;padding:24px 20px}
+  h1{font-size:18px;font-weight:700;color:#1DC85A;margin-bottom:6px}
+  .sub{font-size:13px;color:#555;margin-bottom:24px}
+  .step{background:#141414;border:1px solid #222;border-radius:14px;padding:18px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start}
+  .num{background:#ff5555;color:white;font-weight:800;font-size:14px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .step-text{font-size:15px;line-height:1.5;color:#ccc}
+  .step-text b{color:white}
+  textarea{width:100%;height:70px;background:#0a0a0a;border:1px solid #333;border-radius:10px;padding:12px;font-size:11px;color:#666;resize:none;font-family:monospace}
+  .btn{display:block;width:100%;padding:16px;background:#ff5555;color:white;border:none;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer;margin-top:8px}
+  .btn:active{opacity:0.8}
+  .btn.copied{background:#333;color:#ff5555}
+</style>
+</head>
+<body>
+
+<h1>Token Diagnostic</h1>
+<div class="sub">Run this on admin-panel.bolt.eu to find where the token is stored</div>
+
+<div class="step">
+  <div class="num">1</div>
+  <div class="step-text">Tap the textarea below → <b>Select All</b> → <b>Copy</b></div>
+</div>
+
+<textarea id="code" readonly onclick="this.select()">javascript:(function(){var out=[];out.push('=== localStorage ('+localStorage.length+' keys) ===');for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);var v=localStorage.getItem(k)||'';out.push('['+k+'] len='+v.length+' | '+v.substring(0,120));}out.push('');out.push('=== sessionStorage ('+sessionStorage.length+' keys) ===');for(var i=0;i<sessionStorage.length;i++){var k=sessionStorage.key(i);var v=sessionStorage.getItem(k)||'';out.push('['+k+'] len='+v.length+' | '+v.substring(0,120));}out.push('');out.push('=== cookies ===');out.push(document.cookie.substring(0,500)||'(none)');out.push('');out.push('=== window keys with "token/auth/jwt" ===');Object.keys(window).forEach(function(k){if(/token|auth|jwt|bearer/i.test(k))out.push('window.'+k+'='+String(window[k]).substring(0,100));});var o=document.createElement('div');o.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0a0a;z-index:999999;overflow:auto;padding:20px 16px;font-family:monospace;font-size:12px;color:#ccc;white-space:pre-wrap;word-break:break-all';o.innerHTML='<button onclick="this.parentElement.remove()" style="position:fixed;top:12px;right:12px;padding:8px 18px;background:#1DC85A;color:black;border:none;border-radius:8px;font-weight:800;cursor:pointer;font-size:14px">Close</button>\n\n'+out.join('\n');document.body.appendChild(o);})();</textarea>
+
+<button class="btn" id="copyBtn" onclick="sel()">Select All Code</button>
+
+<div class="step" style="margin-top:20px">
+  <div class="num">2</div>
+  <div class="step-text">Add it as a bookmark called <b>"Fleet Diagnostic"</b> — same steps as the main bookmarklet</div>
+</div>
+
+<div class="step">
+  <div class="num">3</div>
+  <div class="step-text">Go to <b>admin-panel.bolt.eu</b> while logged in → tap <b>Fleet Diagnostic</b> → take a <b>screenshot</b> of everything it shows and send it</div>
+</div>
+
+<script>
+function sel(){
+  var ta=document.getElementById('code');
+  ta.select();ta.setSelectionRange(0,99999);
+  try{navigator.clipboard.writeText(ta.value).then(function(){done();});}catch(e){document.execCommand('copy');done();}
+  function done(){var b=document.getElementById('copyBtn');b.textContent='Copied!';b.classList.add('copied');setTimeout(function(){b.textContent='Select All Code';b.classList.remove('copied');},2500);}
+}
+</script>
+</body>
+</html>
