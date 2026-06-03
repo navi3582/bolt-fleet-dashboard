@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Berlin Fleet Dashboard</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a0a;color:white;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding:20px}
+  .header{text-align:center;margin-bottom:28px;padding-top:8px}
+  .header h1{font-size:22px;font-weight:700;letter-spacing:-0.3px}
+  .header .sub{font-size:12px;color:#555;margin-top:5px}
+  .header .sub span{color:#1DC85A}
+  .total{background:linear-gradient(135deg,#1DC85A18,#1DC85A0a);border:1px solid #1DC85A33;border-radius:16px;padding:20px 24px;text-align:center;margin-bottom:20px;max-width:480px;margin-left:auto;margin-right:auto}
+  .total .num{font-size:56px;font-weight:800;color:#1DC85A;line-height:1}
+  .total .lbl{font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .total .sub2{font-size:12px;color:#444;margin-top:4px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:480px;margin:0 auto}
+  @media(min-width:520px){.grid{grid-template-columns:repeat(4,1fr)}}
+  .card{background:#141414;border:1px solid #222;border-radius:12px;padding:14px 12px;text-align:center}
+  .card .n{font-size:32px;font-weight:800;color:white;line-height:1}
+  .card .l{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:0.3px;margin-top:6px;line-height:1.3}
+  .card.red .n{color:#ff5555}
+  .card.yellow .n{color:#ffaa00}
+  .card.green .n{color:#1DC85A}
+  .bar{height:2px;background:#1DC85A;border-radius:1px;margin-top:10px;transition:width 0.6s}
+  .footer{text-align:center;margin-top:24px;font-size:11px;color:#333}
+  .dot{display:inline-block;width:5px;height:5px;background:#1DC85A;border-radius:50%;margin-right:4px;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .loading{text-align:center;padding:60px 0;color:#333}
+  .error{text-align:center;padding:40px;color:#ff5555;font-size:13px}
+  .bolt{font-weight:800;color:#1DC85A;font-size:24px;display:block;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="header">
+  <span class="bolt">Bolt</span>
+  <h1>Berlin Fleet Dashboard</h1>
+  <div class="sub"><span class="dot"></span>Last updated: <span id="ts">loading...</span> &nbsp;·&nbsp; <span id="next">-</span></div>
+</div>
+
+<div id="app"><div class="loading">Loading fleet data...</div></div>
+
+<div class="footer">Berlin · City 329 · Auto-refresh every 2 min</div>
+
+<script>
+const SHEET_ID = '1LYEqvnfPRySgq18EobrxDG26OQAsbdwB5ZjhhP4Je7g';
+const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1123655017`;
+const REFRESH = 2 * 60 * 1000;
+
+const COLORS = {
+  'Lost': 'red',
+  'Hidden': 'yellow',
+  'Waiting for Order': 'yellow',
+  'On Trip': 'green',
+  'Reserved': 'green'
+};
+
+async function load() {
+  try {
+    const r = await fetch(URL + '&t=' + Date.now());
+    const txt = await r.text();
+    const rows = txt.trim().split('\n').map(r => r.split(','));
+    if (rows.length < 2) throw new Error('No data yet');
+
+    const headers = rows[0].map(h => h.trim());
+    const latest = rows[rows.length - 1];
+    const data = {};
+    headers.forEach((h, i) => data[h] = (latest[i] || '').trim());
+
+    const ts = data['Timestamp'] || 'unknown';
+    const total = parseInt(data['Total']) || 0;
+    const states = headers.filter(h => h !== 'Timestamp' && h !== 'Total');
+    const maxVal = Math.max(...states.map(s => parseInt(data[s]) || 0));
+
+    const cards = states.map(s => {
+      const v = parseInt(data[s]) || 0;
+      const pct = maxVal > 0 ? Math.round(v / maxVal * 100) : 0;
+      const cls = COLORS[s] || '';
+      return `<div class="card ${cls}">
+        <div class="n">${v}</div>
+        <div class="l">${s}</div>
+        <div class="bar" style="width:${pct}%"></div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('ts').textContent = ts;
+    document.getElementById('app').innerHTML = `
+      <div class="total">
+        <div class="lbl">Total Fleet</div>
+        <div class="num">${total}</div>
+        <div class="sub2">vehicles across all states</div>
+      </div>
+      <div class="grid">${cards}</div>`;
+  } catch(e) {
+    document.getElementById('app').innerHTML = `<div class="error">${e.message}<br><small>Check that the Google Sheet is public and the Sheet ID is correct.</small></div>`;
+  }
+}
+
+let left = REFRESH / 1000;
+setInterval(() => {
+  left--;
+  if (left <= 0) { left = REFRESH / 1000; load(); }
+  const m = Math.floor(left / 60), s = left % 60;
+  document.getElementById('next').textContent = `next refresh ${m}:${String(s).padStart(2,'0')}`;
+}, 1000);
+
+load();
+</script>
+</body>
+</html>
