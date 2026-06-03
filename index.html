@@ -60,7 +60,8 @@ async function load() {
   try {
     const r = await fetch(URL + '&t=' + Date.now());
     const txt = await r.text();
-    const rows = txt.trim().split('\n').map(r => r.split(','));
+    const parseCSV = s => { const r=[]; let c='',q=false; for(let i=0;i<s.length;i++){const ch=s[i]; if(ch==='"'){q=!q;}else if(ch===','&&!q){r.push(c.trim());c='';}else{c+=ch;}} r.push(c.trim()); return r; };
+    const rows = txt.trim().split('\n').map(r => parseCSV(r));
     if (rows.length < 2) throw new Error('No data yet');
 
     const headers = rows[0].map(h => h.trim());
