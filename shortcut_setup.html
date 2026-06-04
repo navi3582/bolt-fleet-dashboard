@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Berlin Fleet — Shortcut Setup</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a0a;color:white;font-family:-apple-system,sans-serif;padding:20px}
+  h1{color:#1DC85A;font-size:20px;margin-bottom:4px}
+  .sub{color:#555;font-size:13px;margin-bottom:28px}
+  .step{background:#141414;border:1px solid #222;border-radius:12px;padding:16px;margin-bottom:16px}
+  .step h2{font-size:15px;color:#1DC85A;margin-bottom:8px}
+  .step p{font-size:13px;color:#888;margin-bottom:10px;line-height:1.5}
+  .step b{color:#ccc}
+  textarea{width:100%;background:#000;border:1px solid #333;border-radius:8px;padding:12px;color:#aaa;font-family:monospace;font-size:11px;resize:none}
+  .btn{display:block;width:100%;padding:13px;background:#1DC85A;color:black;border:none;border-radius:10px;font-weight:800;font-size:15px;margin-top:8px;cursor:pointer}
+  .btn:active{opacity:0.8}
+  .btn.done{background:#222;color:#1DC85A}
+  .tip{background:#1DC85A18;border:1px solid #1DC85A33;border-radius:8px;padding:12px;font-size:12px;color:#888;margin-bottom:20px;line-height:1.6}
+  .tip b{color:#1DC85A}
+</style>
+</head>
+<body>
+
+<h1>Berlin Fleet Shortcut</h1>
+<div class="sub">iPad setup — follow steps in order</div>
+
+<div class="tip">
+  <b>What you need:</b> Open the <b>Shortcuts app</b> on your iPad. Create a new Shortcut named <b>"Berlin Fleet"</b>. Then add 5 actions using the code below.
+</div>
+
+<div class="step">
+  <h2>Action 1 — Run JavaScript on Webpage</h2>
+  <p>In Shortcuts, search for <b>"Run JavaScript on Webpage"</b> → add it → tap the code area → Select All → delete → paste this:</p>
+  <textarea id="js1" rows="6" readonly onclick="this.select()">localStorage.setItem('_bft','');
+var of=window.fetch;
+window.fetch=function(u,o){
+  if(u&&u.indexOf('getList')!==-1&&o&&o.headers){
+    var h=o.headers,a='';
+    if(typeof h.get==='function')a=h.get('authorization')||h.get('Authorization')||'';
+    else a=h['Authorization']||h['authorization']||'';
+    if(a&&a.toLowerCase().indexOf('bearer ')===0)localStorage.setItem('_bft',a.replace(/^bearer /i,''));
+  }
+  return of.apply(this,arguments);
+};
+try{window.history.pushState({t:Date.now()},'',location.href);window.dispatchEvent(new PopStateEvent('popstate',{state:{}}));}catch(e){}
+completion('ready');</textarea>
+  <button class="btn" onclick="cp('js1',this)">Tap to Select All → Copy</button>
+</div>
+
+<div class="step">
+  <h2>Action 2 — Wait</h2>
+  <p>Search for <b>"Wait"</b> → add it → set to <b>4 seconds</b></p>
+</div>
+
+<div class="step">
+  <h2>Action 3 — Run JavaScript on Webpage</h2>
+  <p>Add another <b>"Run JavaScript on Webpage"</b> → paste this:</p>
+  <textarea id="js2" rows="6" readonly onclick="this.select()">var t=localStorage.getItem('_bft')||'';
+localStorage.removeItem('_bft');
+if(!t){for(var i=0;i<localStorage.length;i++){var v=localStorage.getItem(localStorage.key(i))||'';if(v.indexOf('eyJ')===0&&v.split('.').length===3&&v.length>50){t=v;break;}}}
+if(!t){for(var i=0;i<sessionStorage.length;i++){var v=sessionStorage.getItem(sessionStorage.key(i))||'';if(v.indexOf('eyJ')===0&&v.split('.').length===3&&v.length>50){t=v;break;}}}
+localStorage.setItem('_bftoken',t);
+completion(t?'Token found':'No token found');</textarea>
+  <button class="btn" onclick="cp('js2',this)">Tap to Select All → Copy</button>
+</div>
+
+<div class="step">
+  <h2>Action 4 — Run JavaScript on Webpage</h2>
+  <p>Add another <b>"Run JavaScript on Webpage"</b> → paste this:</p>
+  <textarea id="js3" rows="6" readonly onclick="this.select()">var API='https://admin-panel.bolt.eu/backend/rental-car-vehicle-fleet/adminPanel/vehicle/getList';
+var SCRIPT='https://script.google.com/macros/s/AKfycbyAqFMhAyssm9sZ1RrB_hFPmlV_hJlfao1LSKu1ghlYXRxI4Q0nVKoesV39bnmcDphv/exec';
+var SECRET='BoltFleet-Berlin-2026';
+var CITY=329;
+var ST=[['hidden','Hidden'],['in_service_shop','In Service Shop'],['in_maintenance','In Maintenance'],['lost','Lost'],['deactivated','Deactivated'],['waiting_for_order','Waiting for Order'],['reserved','Reserved'],['on_trip','On Trip']];
+var token=localStorage.getItem('_bftoken')||'';
+localStorage.removeItem('_bftoken');
+if(!token){completion('Error: no token. Open admin-panel.bolt.eu first.');}
+var counts={},pending=ST.length;
+ST.forEach(function(s){
+  fetch(API,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({filter:{vehicle_states:[s[0]],city_ids:[CITY]},items_per_page:1,page_number:0})})
+  .then(function(r){return r.json();})
+  .then(function(d){counts[s[1]]=d.data&&d.data.pages?d.data.pages.total_rows:0;if(--pending===0)done();})
+  .catch(function(){counts[s[1]]=0;if(--pending===0)done();});
+});
+function done(){
+  var total=0,d=new Date();
+  var now=('0'+d.getDate()).slice(-2)+'.'+('0'+(d.getMonth()+1)).slice(-2)+'.'+d.getFullYear()+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+  var payload={token:SECRET,timestamp:now,Total:0,bearer_token:token};
+  ST.forEach(function(s){payload[s[1]]=counts[s[1]]||0;total+=payload[s[1]];});
+  payload.Total=total;
+  var img=new Image();
+  img.src=SCRIPT+'?d='+encodeURIComponent(JSON.stringify(payload));
+  var lines=ST.map(function(s){return s[1]+': '+(counts[s[1]]||0);});
+  completion('Total: '+total+'\n'+lines.join('\n')+'\n\nSaved to dashboard');
+}</textarea>
+  <button class="btn" onclick="cp('js3',this)">Tap to Select All → Copy</button>
+</div>
+
+<div class="step">
+  <h2>Action 5 — Show Notification</h2>
+  <p>Search for <b>"Show Notification"</b> → add it → in the body field tap <b>"Shortcut Result"</b> (from the variable suggestions)</p>
+</div>
+
+<div class="step" style="border-color:#1DC85A44">
+  <h2 style="color:#fff">How to run it</h2>
+  <p>1. Open Safari → go to <b>admin-panel.bolt.eu</b> (must be logged in)<br><br>
+  2. Switch to Shortcuts app → tap <b>Berlin Fleet</b><br><br>
+  3. Wait ~8 seconds → notification shows fleet counts<br><br>
+  Apps Script then auto-fetches every minute for the rest of the day.</p>
+</div>
+
+<script>
+function cp(id, btn) {
+  var ta = document.getElementById(id);
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+  try {
+    navigator.clipboard.writeText(ta.value).then(function() { ok(btn); }).catch(function() { fb(ta, btn); });
+  } catch(e) { fb(ta, btn); }
+}
+function fb(ta, btn) { document.execCommand('copy'); ok(btn); }
+function ok(btn) {
+  btn.textContent = 'Copied!';
+  btn.classList.add('done');
+  setTimeout(function() { btn.textContent = 'Tap to Select All → Copy'; btn.classList.remove('done'); }, 2500);
+}
+</script>
+</body>
+</html>
