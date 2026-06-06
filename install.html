@@ -20,17 +20,16 @@ h1{font-size:20px;font-weight:800;color:#1DC85A;margin-bottom:4px}
 .divider{border:none;border-top:1px solid #1a1a1a;margin:24px 0}
 .sec{font-size:12px;font-weight:700;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
 .note{font-size:12px;color:#555;text-align:center;margin-top:6px}
-.highlight{background:#1DC85A18;border:1px solid #1DC85A33;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#aaa;line-height:1.6}
-.highlight b{color:#1DC85A}
+.info{background:#1DC85A18;border:1px solid #1DC85A33;border-radius:10px;padding:12px 14px;margin-bottom:20px;font-size:13px;color:#aaa;line-height:1.6}
+.info b{color:#1DC85A}
 </style>
 </head>
 <body>
-
 <h1>Berlin Fleet</h1>
 <div class="sub">One-time setup — takes 2 minutes</div>
 
-<div class="highlight">
-  <b>How it works now:</b> The bookmarklet reads your login token directly from the page — no filter tap needed. Just tap the bookmark and results appear in ~5 seconds.
+<div class="info">
+  <b>How it works:</b> Tap the bookmark once on the admin panel — it fetches all fleet counts and keeps auto-updating every 2 minutes while that tab stays open. Tap it again to stop.
 </div>
 
 <button class="copybtn" id="copyBtn" onclick="copyBM()">① Copy Bookmarklet Code</button>
@@ -38,107 +37,102 @@ h1{font-size:20px;font-weight:800;color:#1DC85A;margin-bottom:4px}
 
 <div class="step">
   <div class="num">2</div>
-  <div class="txt">Tap <b>Share</b> (box+arrow at top of Safari) → <span class="tag">Add Bookmark</span> → name it <b>Berlin Fleet</b> → <b>Save</b></div>
+  <div class="txt">Tap <b>Share</b> (box+arrow) → <span class="tag">Add Bookmark</span> → name: <b>Berlin Fleet</b> → <b>Save</b></div>
 </div>
 <div class="step">
   <div class="num">3</div>
-  <div class="txt">Tap the <b>Bookmarks icon</b> (open book) → find <b>Berlin Fleet</b> → swipe left → tap <span class="tag">Edit</span></div>
+  <div class="txt">Tap <b>Bookmarks</b> icon → find <b>Berlin Fleet</b> → swipe left → <span class="tag">Edit</span></div>
 </div>
 <div class="step">
   <div class="num">4</div>
-  <div class="txt">Tap the <b>URL field</b> → <span class="tag">Select All</span> → <span class="tag">Paste</span> → tap <b>Done</b></div>
+  <div class="txt">Tap the <b>URL field</b> → <span class="tag">Select All</span> → <span class="tag">Paste</span> → <b>Done</b></div>
 </div>
 
 <hr class="divider">
-<div class="sec">How to use every day</div>
+<div class="sec">Every day</div>
 
 <div class="step">
   <div class="num">1</div>
-  <div class="txt">Open Safari on <b>admin-panel.bolt.eu</b> — logged in, vehicles page</div>
+  <div class="txt">Open Safari on <b>admin-panel.bolt.eu</b></div>
 </div>
 <div class="step">
   <div class="num">2</div>
-  <div class="txt">Open <b>Bookmarks</b> → tap <b>Berlin Fleet</b></div>
+  <div class="txt">Tap <b>Bookmarks</b> → tap <b>Berlin Fleet</b><br><span style="color:#555;font-size:12px">A green bar appears at the bottom. Counts load in ~5 sec and update every 2 min automatically.</span></div>
 </div>
 <div class="step">
   <div class="num">3</div>
-  <div class="txt">Results appear in <b>~5 seconds</b> — no filter tap needed.<br><span style="color:#555;font-size:12px">Also saves to dashboard which auto-updates every minute.</span></div>
+  <div class="txt">Tap the bar to see the full breakdown. Tap <b>Stop</b> to stop auto-updating.</div>
 </div>
 
 <script>
 var BMCODE = `(function(){
+if(window._bfTimer){clearInterval(window._bfTimer);clearInterval(window._bfCount);window._bfTimer=null;var b=document.getElementById("_bf");if(b)b.remove();return;}
 var AT="https://admin-panel.bolt.eu/backend/admin-user/adminPanel/getAccessToken";
 var A="https://admin-panel.bolt.eu/backend/rental-car-vehicle-fleet/adminPanel/vehicle/getList";
 var S="https://script.google.com/macros/s/AKfycbxDSy72B_BzEKbJMExn2pdPmXpDHXlynuhhewX1R-X2Qf1eidJJ043Ob6NcQ8mjnA5Z/exec";
 var K="BoltFleet-Berlin-2026";
 var C=329;
+var IV=2*60*1000;
 var ST=[["hidden","Hidden"],["in_service_shop","In Service Shop"],["in_maintenance","In Maintenance"],["lost","Lost"],["deactivated","Deactivated"],["waiting_for_order","Waiting for Order"],["reserved","Reserved"],["on_trip","On Trip"]];
 var ex=document.getElementById("_bf");if(ex)ex.remove();
-window._bfclose=function(){var e=document.getElementById("_bf");if(e)e.remove();};
+window._bfclose=function(){if(window._bfTimer){clearInterval(window._bfTimer);clearInterval(window._bfCount);window._bfTimer=null;}var e=document.getElementById("_bf");if(e)e.remove();};
+window._bfdetail=function(){var p=document.getElementById("_bfpop");if(p){p.remove();}else if(window._bfLast){showPop(window._bfLast.cnt,window._bfLast.tok,window._bfLast.now);}};
 var bar=document.createElement("div");bar.id="_bf";
-bar.style.cssText="position:fixed;bottom:0;left:0;right:0;background:#111;border-top:2px solid #1DC85A;padding:12px 16px;z-index:2147483647;font-family:-apple-system,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:12px";
-bar.innerHTML="<span><b style='color:#1DC85A'>Berlin Fleet</b> <span id='_bfm' style='color:#888;font-size:13px'>— loading...</span></span><button onclick='_bfclose()' style='background:#222;color:#666;border:1px solid #333;border-radius:6px;padding:6px 14px;font-size:13px'>✕</button>";
+bar.style.cssText="position:fixed;bottom:0;left:0;right:0;background:#111;border-top:2px solid #1DC85A;padding:10px 16px;z-index:2147483647;font-family:-apple-system,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:8px";
+bar.innerHTML="<span onclick='_bfdetail()' style='cursor:pointer;flex:1;min-width:0'><b style='color:#1DC85A;font-size:15px'>Berlin Fleet</b> <span id='_bfm' style='color:#888;font-size:13px'>— loading...</span></span><button onclick='_bfclose()' style='background:#222;color:#666;border:1px solid #333;border-radius:6px;padding:5px 12px;font-size:12px;flex-shrink:0'>Stop</button>";
 document.body.appendChild(bar);
+var cd=IV/1000;
+window._bfCount=setInterval(function(){cd--;if(cd<=0)cd=IV/1000;if(window._bfLast){var m=Math.floor(cd/60),s=cd%60;sm("— "+window._bfLast.tot+" total \xb7 next "+(m>0?m+"m":"")+s+"s");}},1000);
 function sm(t){var e=document.getElementById("_bfm");if(e)e.textContent=t;}
-var rt;
-try{
-  var s=JSON.parse(localStorage.getItem("persist:session")||"{}");
-  var inner=JSON.parse(s.session||"{}");
-  rt=inner.token&&inner.token.refreshToken;
-}catch(e){}
-if(!rt){sm("— not logged in to admin panel");return;}
-sm("— getting token...");
-fetch(AT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({refresh_token:rt})})
-.then(function(r){return r.json();})
-.then(function(d){
-  if(!d.data||!d.data.access_token){sm("— token refresh failed, try reloading the page");return;}
-  sm("— loading fleet data...");
-  var tk=d.data.access_token;
+function getRT(){try{var s=JSON.parse(localStorage.getItem("persist:session")||"{}");var i=JSON.parse(s.session||"{}");return i.token&&i.token.refreshToken;}catch(e){return null;}}
+function update(){
+  cd=IV/1000;sm("— updating...");
+  var rt=getRT();if(!rt){sm("— not logged in");return;}
+  fetch(AT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({refresh_token:rt})})
+  .then(function(r){return r.json();})
+  .then(function(d){if(!d.data||!d.data.access_token){sm("— token failed, reload page");return;}fetchAll(d.data.access_token,rt);})
+  .catch(function(){sm("— network error");});
+}
+function fetchAll(token,rt){
   var cnt=ST.map(function(){return 0;}),left=ST.length;
   ST.forEach(function(s,i){
-    fetch(A,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json","Authorization":"Bearer "+tk},body:JSON.stringify({filter:{vehicle_states:[s[0]],city_ids:[C]},items_per_page:1,page_number:0})})
+    fetch(A,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({filter:{vehicle_states:[s[0]],city_ids:[C]},items_per_page:1,page_number:0})})
     .then(function(r){return r.json();})
-    .then(function(d){cnt[i]=d.data&&d.data.pages?d.data.pages.total_rows:0;if(--left===0)show(cnt,tk);})
-    .catch(function(){if(--left===0)show(cnt,tk);});
+    .then(function(d){cnt[i]=d.data&&d.data.pages?d.data.pages.total_rows:0;if(--left===0)done(cnt,token,rt);})
+    .catch(function(){if(--left===0)done(cnt,token,rt);});
   });
-})
-.catch(function(){sm("— network error, try again");});
-function show(cnt,tk){
+}
+function done(cnt,token,rt){
   var tot=cnt.reduce(function(a,b){return a+b;},0);
   var now=new Date().toLocaleString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
-  var rows=ST.map(function(s,i){return "<tr><td style='padding:9px 10px;color:#ccc;border-bottom:1px solid #1e1e1e;font-size:14px'>"+s[1]+"</td><td style='padding:9px 10px;text-align:right;color:#1DC85A;font-weight:800;border-bottom:1px solid #1e1e1e;font-size:15px'>"+cnt[i]+"</td></tr>";}).join("");
-  var b=document.getElementById("_bf");if(b)b.remove();
-  var pop=document.createElement("div");pop.id="_bf";
-  pop.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:2147483647;display:flex;align-items:center;justify-content:center;font-family:-apple-system,sans-serif";
-  pop.innerHTML="<div style='background:#111;border:1px solid #333;border-radius:16px;padding:22px;max-width:88vw;min-width:300px'><b style='color:#1DC85A;font-size:18px'>Berlin Fleet</b><table style='width:100%;border-collapse:collapse;margin-top:14px'>"+rows+"</table><div style='margin-top:12px;padding-top:10px;border-top:1px solid #1e1e1e;color:#444;font-size:12px'>Total: <b style='color:white;font-size:16px'>"+tot+"</b> \xb7 "+now+"</div><div id='_bfs' style='font-size:12px;color:#555;margin-top:6px'>Saving to dashboard...</div><button onclick='_bfclose()' style='margin-top:14px;width:100%;padding:13px;background:#1DC85A;color:black;border:none;border-radius:10px;font-weight:800;font-size:15px'>Close</button></div>";
-  document.body.appendChild(pop);
-  var pl={token:K,timestamp:now,Total:tot,bearer_token:tk,refresh_token:rt};
+  window._bfLast={cnt:cnt,tok:token,now:now,tot:tot};
+  sm("— "+tot+" \xb7 "+now.split(", ")[1]||now);
+  var pl={token:K,timestamp:now,Total:tot,bearer_token:token,refresh_token:rt};
   ST.forEach(function(s,i){pl[s[1]]=cnt[i];});
   var img=new Image();img.src=S+"?d="+encodeURIComponent(JSON.stringify(pl));
-  setTimeout(function(){var e=document.getElementById("_bfs");if(e)e.innerHTML="<span style='color:#1DC85A'>&#10003; Saved — dashboard auto-updates every minute</span>";},2500);
+  showPop(cnt,token,now);
 }
+function showPop(cnt,tok,now){
+  var p=document.getElementById("_bfpop");if(p)p.remove();
+  var tot=cnt.reduce(function(a,b){return a+b;},0);
+  var rows=ST.map(function(s,i){return "<tr><td style='padding:8px 10px;color:#ccc;border-bottom:1px solid #1e1e1e;font-size:14px'>"+s[1]+"</td><td style='padding:8px 10px;text-align:right;color:#1DC85A;font-weight:800;border-bottom:1px solid #1e1e1e;font-size:15px'>"+cnt[i]+"</td></tr>";}).join("");
+  var pop=document.createElement("div");pop.id="_bfpop";
+  pop.style.cssText="position:fixed;bottom:50px;left:50%;transform:translateX(-50%);background:#111;border:1px solid #333;border-radius:16px;padding:20px;z-index:2147483646;font-family:-apple-system,sans-serif;min-width:300px;max-width:88vw;box-shadow:0 4px 40px rgba(0,0,0,.8)";
+  pop.innerHTML="<b style='color:#1DC85A;font-size:17px'>Berlin Fleet</b><table style='width:100%;border-collapse:collapse;margin-top:12px'>"+rows+"</table><div style='margin-top:10px;padding-top:10px;border-top:1px solid #1e1e1e;color:#444;font-size:12px'>Total: <b style='color:white;font-size:15px'>"+tot+"</b> \xb7 "+now+"<br><span style='color:#1DC85A;font-size:11px'>Auto-updating every 2 min</span></div><button onclick='document.getElementById(chr39_bfpop_chr39).remove()' style='margin-top:12px;width:100%;padding:11px;background:#222;color:#888;border:1px solid #333;border-radius:8px;font-size:13px'>Close</button>";
+  pop.querySelector("button").onclick=function(){pop.remove();};
+  document.body.appendChild(pop);
+}
+update();
+window._bfTimer=setInterval(update,IV);
 })();`;
 
 var BM = "javascript:" + BMCODE.replace(/\n/g,'').replace(/\s{2,}/g,' ');
 
 function copyBM(){
-  var btn=document.getElementById("copyBtn");
-  var note=document.getElementById("note");
-  function ok(){
-    btn.textContent="✓ Copied!";btn.classList.add("done");
-    note.textContent="Now do steps 2 → 3 → 4 below ↓";note.style.color="#1DC85A";
-    setTimeout(function(){btn.textContent="① Copy Bookmarklet Code";btn.classList.remove("done");note.textContent="Tap the button above first";note.style.color="";},4000);
-  }
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(BM).then(ok).catch(fb);
-  }else{fb();}
-  function fb(){
-    var ta=document.createElement("textarea");ta.value=BM;
-    ta.style.cssText="position:fixed;top:0;left:0;opacity:0.01;font-size:16px";
-    document.body.appendChild(ta);ta.focus();ta.select();
-    try{document.execCommand("copy");ok();}catch(e){note.textContent="Copy failed — try another browser";}
-    ta.remove();
-  }
+  var btn=document.getElementById("copyBtn"),note=document.getElementById("note");
+  function ok(){btn.textContent="✓ Copied!";btn.classList.add("done");note.textContent="Now steps 2→3→4 below ↓";note.style.color="#1DC85A";setTimeout(function(){btn.textContent="① Copy Bookmarklet Code";btn.classList.remove("done");note.textContent="Tap the button above first";note.style.color="";},4000);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(BM).then(ok).catch(fb);}else{fb();}
+  function fb(){var ta=document.createElement("textarea");ta.value=BM;ta.style.cssText="position:fixed;top:0;left:0;opacity:0.01;font-size:16px";document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand("copy");ok();}catch(e){note.textContent="Copy failed";}ta.remove();}
 }
 </script>
 </body>
