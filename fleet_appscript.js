@@ -1,8 +1,9 @@
-var SECRET   = 'BoltFleet-Berlin-2026';
-var SHEET_ID = '1LYEqvnfPRySgq18EobrxDG26OQAsbdwB5ZjhhP4Je7g';
-var GID      = 1123655017;
-var CITY_ID  = 329;
-var BOLT_API = 'https://admin-panel.bolt.eu/backend/rental-car-vehicle-fleet/adminPanel/vehicle/getList';
+var SECRET    = 'BoltFleet-Berlin-2026';
+var SHEET_ID  = '1LYEqvnfPRySgq18EobrxDG26OQAsbdwB5ZjhhP4Je7g';
+var GID       = 1123655017;
+var CITY_ID   = 329;
+var FLEET_API = 'https://admin-panel.bolt.eu/backend/rental-car-vehicle-fleet/adminPanel/vehicle/getList';
+var TOKEN_API = 'https://admin-panel.bolt.eu/backend/admin-user/adminPanel/getAccessToken';
 
 var STATES = [
   ['hidden',            'Hidden'],
@@ -15,10 +16,36 @@ var STATES = [
   ['on_trip',           'On Trip']
 ];
 
+// ── Get a fresh access token using the stored refresh token ───────────────────
+function getFreshToken() {
+  var refresh = PropertiesService.getScriptProperties().getProperty('refresh_token');
+  if (!refresh) return null;
+
+  var res  = UrlFetchApp.fetch(TOKEN_API, {
+    method: 'post',
+    contentType: 'application/json',
+    headers: {
+      'Accept':   'application/json',
+      'Origin':   'https://admin-panel.bolt.eu',
+      'Referer':  'https://admin-panel.bolt.eu/rentals-carsharing/vehicles/list'
+    },
+    payload: JSON.stringify({ refresh_token: refresh }),
+    muteHttpExceptions: true
+  });
+
+  var body = JSON.parse(res.getContentText());
+  Logger.log('getAccessToken → ' + res.getResponseCode() + ' ' + res.getContentText().substring(0, 80));
+
+  return (body.data && body.data.access_token) ? body.data.access_token : null;
+}
+
 // ── Runs automatically every minute ──────────────────────────────────────────
 function fetchFleetData() {
-  var token = PropertiesService.getScriptProperties().getProperty('bearer_token');
-  if (!token) return; // No token yet — wait for bookmarklet
+  var token = getFreshToken();
+  if (!token) {
+    Logger.log('No refresh_token stored — open admin panel and run the bookmarklet first.');
+    return;
+  }
 
   var results = {};
   var failed  = 0;
@@ -27,34 +54,31 @@ function fetchFleetData() {
     var key   = STATES[i][0];
     var label = STATES[i][1];
     try {
-      var res  = UrlFetchApp.fetch(BOLT_API, {
+      var res  = UrlFetchApp.fetch(FLEET_API, {
         method: 'post',
         contentType: 'application/json',
         headers: {
           'Authorization': 'Bearer ' + token,
-          'Accept': 'application/json',
-          'Origin': 'https://admin-panel.bolt.eu',
-          'Referer': 'https://admin-panel.bolt.eu/rentals-carsharing/vehicles/list',
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+          'Accept':        'application/json',
+          'Origin':        'https://admin-panel.bolt.eu',
+          'Referer':       'https://admin-panel.bolt.eu/rentals-carsharing/vehicles/list'
         },
         payload: JSON.stringify({ filter: { vehicle_states: [key], city_ids: [CITY_ID] }, items_per_page: 1, page_number: 0 }),
         muteHttpExceptions: true
       });
       var data = JSON.parse(res.getContentText());
-      Logger.log(label + ': ' + res.getResponseCode() + ' → ' + res.getContentText().substring(0, 100));
       if (data.code === 503 || data.message === 'NOT_AUTHORIZED') {
-        Logger.log('Token rejected — clearing.');
-        PropertiesService.getScriptProperties().deleteProperty('bearer_token');
+        Logger.log('Access token rejected — will retry next minute with fresh token.');
         return;
       }
-      results[label] = data.data && data.data.pages ? data.data.pages.total_rows : 0;
+      results[label] = (data.data && data.data.pages) ? data.data.pages.total_rows : 0;
     } catch(e) {
       results[label] = 0;
       failed++;
     }
   }
 
-  if (failed === STATES.length) return; // All failed, skip
+  if (failed === STATES.length) return;
 
   var now   = Utilities.formatDate(new Date(), 'Europe/Berlin', 'dd.MM.yyyy HH:mm');
   var total = 0;
@@ -64,51 +88,30 @@ function fetchFleetData() {
   saveRow(results);
 }
 
-// ── Run once to set up the automatic trigger ──────────────────────────────────
+// ── One-time setup ────────────────────────────────────────────────────────────
 function setupTrigger() {
-  // Remove any existing triggers
   ScriptApp.getProjectTriggers().forEach(function(t) { ScriptApp.deleteTrigger(t); });
-  // Run fetchFleetData every minute
   ScriptApp.newTrigger('fetchFleetData').timeBased().everyMinutes(1).create();
-  Logger.log('Trigger set up — fleet data will be fetched every minute.');
+  Logger.log('Trigger created — fleet data will refresh every minute.');
 }
 
-// ── Called by bookmarklet to save token + fleet data ─────────────────────────
+// ── Receives refresh_token from bookmarklet ───────────────────────────────────
 function doGet(e) {
   try {
     var p = e && e.parameter ? e.parameter : {};
-
-    // ?action=getToken&secret=... — used by fetch_fleet.py on Mac
-    if (p.action === 'getToken') {
-      if (p.secret !== SECRET) return json({ success: false, error: 'Unauthorized' });
-      var t = PropertiesService.getScriptProperties().getProperty('bearer_token') || '';
-      return json({ success: true, token: t });
-    }
-
     var d = p.d ? JSON.parse(decodeURIComponent(p.d)) : null;
-    var secret = p.secret || p.token || (d && d.token) || '';
+    var secret = (d && d.token) || p.secret || p.token || '';
     if (secret !== SECRET) return html('Unauthorized');
     if (!d) return html('No data');
-    if (d.bearer_token) {
-      PropertiesService.getScriptProperties().setProperty('bearer_token', d.bearer_token);
-    }
+
+    var props = PropertiesService.getScriptProperties();
+    if (d.refresh_token) props.setProperty('refresh_token', d.refresh_token);
+    if (d.bearer_token)  props.setProperty('bearer_token',  d.bearer_token);
+
     saveRow(d);
-    return html('<script>window.close();</script>Saved!');
+    return html('Saved! Dashboard will auto-update every minute.');
   } catch(err) {
     return html('Error: ' + err.message);
-  }
-}
-
-function doPost(e) {
-  try {
-    var payload = JSON.parse(e.postData.contents);
-    if (payload.token !== SECRET) return json({ success: false, error: 'Unauthorized' });
-    if (payload.bearer_token) {
-      PropertiesService.getScriptProperties().setProperty('bearer_token', payload.bearer_token);
-    }
-    return saveRow(payload);
-  } catch(err) {
-    return json({ success: false, error: err.message });
   }
 }
 
@@ -127,7 +130,7 @@ function saveRow(d) {
     sheet.setFrozenRows(1);
   }
   sheet.appendRow([
-    d.timestamp,
+    d.timestamp        || '',
     d['Hidden']               || 0,
     d['In Service Shop']      || 0,
     d['In Maintenance']       || 0,
